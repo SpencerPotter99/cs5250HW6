@@ -107,16 +107,21 @@ class WidgetConsumer:
             'owner': widget['owner'],
             'label': widget['label'],
             'description': widget['description'],
+            'color': widget.get('color', None),
+            'height': widget.get('height', None),
+            'length': widget.get('length', None),
+            'note': widget.get('note', None),
+            'price': widget.get('price', None),
+            'quantity': widget.get('quantity', None),
+            'rating': widget.get('rating', None),
+            'size': widget.get('size', None),
+            'vendor': widget.get('vendor', None),
+            'width': widget.get('width', None),
+            'last_modified_on': str(time.time())
         }
 
-        for attr in widget.get('otherAttributes', []):
-            item[attr['name']] = attr['value']
-
-        try:
-            self.dynamodb.put_item(Item=item)
-            logging.info(f"Widget stored in DynamoDB: {widget['widgetId']}")
-        except Exception as e:
-            logging.error(f"Error storing widget in DynamoDB: {e}")
+        self.dynamodb.put_item(Item=item)
+        logging.info(f"Widget stored in DynamoDB: {widget['widgetId']}")
 
 
     def process_delete_request(self, widget):
@@ -131,7 +136,7 @@ class WidgetConsumer:
 
         elif self.storage_strategy == 'dynamodb':
             try:
-                self.dynamodb.delete_item(Key={'widget_id': widget_id})
+                self.dynamodb.delete_item(Key={'id': widget_id})
                 logging.info(f"Widget deleted from DynamoDB: {widget_id}")
             except Exception as e:
                 logging.warning(f"Failed to delete widget from DynamoDB: {e}")
