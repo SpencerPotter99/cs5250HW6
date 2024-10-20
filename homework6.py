@@ -103,7 +103,7 @@ class WidgetConsumer:
 
     def store_in_dynamodb(self, widget):
         item = {
-            'widget_id': widget['widgetId'],
+            'id': widget['widgetId'],
             'owner': widget['owner'],
             'label': widget['label'],
             'description': widget['description'],
@@ -111,9 +111,13 @@ class WidgetConsumer:
 
         for attr in widget.get('otherAttributes', []):
             item[attr['name']] = attr['value']
-        
-        self.dynamodb.put_item(Item=item)
-        logging.info(f"Widget stored in DynamoDB: {widget['widgetId']}")
+
+        try:
+            self.dynamodb.put_item(Item=item)
+            logging.info(f"Widget stored in DynamoDB: {widget['widgetId']}")
+        except Exception as e:
+            logging.error(f"Error storing widget in DynamoDB: {e}")
+
 
     def process_delete_request(self, widget):
         widget_id = widget['widgetId']
